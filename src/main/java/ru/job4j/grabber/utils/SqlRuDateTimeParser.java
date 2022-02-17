@@ -68,8 +68,8 @@ public class SqlRuDateTimeParser implements DateTimeParser {
 
     private static String[] parseString(String parse, String regex) {
         String[] arrayString = parse.split(regex);
-        for (String s : arrayString) {
-            s.trim();
+        for (int i = 0; i < arrayString.length; i++) {
+            arrayString[i] = arrayString[i].trim();
         }
         return arrayString;
     }
