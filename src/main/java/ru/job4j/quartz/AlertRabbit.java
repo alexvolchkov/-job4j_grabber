@@ -18,7 +18,8 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 public class AlertRabbit {
 
     public static void main(String[] args) {
-        try (Connection cn = init()) {
+        Properties config = getConfig();
+        try (Connection cn = init(config)) {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
@@ -27,7 +28,7 @@ public class AlertRabbit {
                     .usingJobData(data)
                     .build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(getInterval())
+                    .withIntervalInSeconds(Integer.parseInt(config.getProperty("rabbit.interval")))
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
@@ -45,33 +46,29 @@ public class AlertRabbit {
         }
     }
 
-    private static int getInterval() {
+    private static Properties getConfig() {
         Properties config = new Properties();
-        try (FileReader in = new FileReader("src/main/resources/rabbit.properties")) {
-            config.load(in);
-        } catch (Exception e) {
+        try (FileReader fr = new FileReader("src/main/resources/rabbit.properties")) {
+            config.load(fr);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return Integer.parseInt(config.getProperty("rabbit.interval"));
+        return config;
     }
 
-    private static Connection init() {
+    private static Connection init(Properties config) {
         Connection cn = null;
-        try (FileReader fr = new FileReader("src/main/resources/rabbit.properties")) {
-             Properties config = new Properties();
-             config.load(fr);
+        try {
             Class.forName(config.getProperty("jdbc.driver"));
             cn = DriverManager.getConnection(
                             config.getProperty("jdbc.url"),
                             config.getProperty("jdbc.username"),
                             config.getProperty("jdbc.password"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
         return cn;
@@ -87,6 +84,7 @@ public class AlertRabbit {
                          "Insert into rabbit (created_date) values(?)")
             ) {
                     ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+                    ps.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
