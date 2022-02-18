@@ -43,6 +43,8 @@ public class AlertRabbit {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -58,19 +60,12 @@ public class AlertRabbit {
         return config;
     }
 
-    private static Connection init(Properties config) {
-        Connection cn = null;
-        try {
-            Class.forName(config.getProperty("jdbc.driver"));
-            cn = DriverManager.getConnection(
+    private static Connection init(Properties config) throws ClassNotFoundException, SQLException {
+        Class.forName(config.getProperty("jdbc.driver"));
+        Connection cn = DriverManager.getConnection(
                             config.getProperty("jdbc.url"),
                             config.getProperty("jdbc.username"),
                             config.getProperty("jdbc.password"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
         return cn;
     }
 
