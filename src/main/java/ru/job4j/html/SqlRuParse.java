@@ -42,16 +42,10 @@ public class SqlRuParse implements Parse {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Element parent = doc.getElementsByClass("msgTable").get(0);
-        String title = parent
-                .getElementsByClass("messageHeader")
-                .get(0)
-                .childNode(1)
-                .toString().trim().split("&nbsp;")[1];
-        String description = parent.getElementsByClass("msgBody").get(1).text();
-        LocalDateTime created = dateTimeParser.parse(
-                parent.getElementsByClass("msgFooter").get(0)
-                        .childNode(0).toString().trim().split("&")[0]);
+        String description = doc.select(".msgBody").get(1).text();
+        String title = doc.select(".messageHeader").get(0).ownText();
+        String createdText = doc.select(".msgFooter").get(0).text();
+        LocalDateTime created = dateTimeParser.parse(createdText);
         return new Post(title, link, description, created);
     }
 
