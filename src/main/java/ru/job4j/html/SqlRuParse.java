@@ -25,8 +25,8 @@ public class SqlRuParse {
         }
     }
 
-    public static Post parsePage(String url) throws IOException {
-        Document doc = Jsoup.connect(url).get();
+    public static Post parsePage(String link) throws IOException {
+        Document doc = Jsoup.connect(link).get();
         Element parent = doc.getElementsByClass("msgTable").get(0);
         String title = parent
                 .getElementsByClass("messageHeader")
@@ -36,6 +36,6 @@ public class SqlRuParse {
         String description = parent.getElementsByClass("msgBody").get(1).text();
         LocalDateTime created = new SqlRuDateTimeParser().parse(
                 parent.getElementsByClass("msgBody").get(1).text());
-        return new Post(title, description, created);
+        return new Post(title, link, description, created);
     }
 }
