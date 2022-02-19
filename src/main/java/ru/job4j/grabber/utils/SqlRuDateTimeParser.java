@@ -27,6 +27,8 @@ public class SqlRuDateTimeParser implements DateTimeParser {
     private static final String TODAY = "сегодня";
     private static final String YESTERDAY = "вчера";
     private static final int DAY_TO_YESTERDAY = 1;
+    private static final int ARRAY_LENGTH_DATE = 3;
+    private static final int ARRAY_LENGTH_DAY = 1;
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("d-M-yy");
 
     @Override
@@ -56,12 +58,12 @@ public class SqlRuDateTimeParser implements DateTimeParser {
     private LocalDate parseDay(String parse) {
         LocalDate rsl;
         String[] arrString = parseString(parse, "\s");
-        if (arrString.length == 1 && YESTERDAY.equals(arrString[0])) {
+        if (arrString.length == ARRAY_LENGTH_DAY && YESTERDAY.equals(arrString[0])) {
             rsl = LocalDate.now().minusDays(DAY_TO_YESTERDAY);
-        } else if (arrString.length == 1 && TODAY.equals(arrString[0])) {
+        } else if (arrString.length == ARRAY_LENGTH_DAY && TODAY.equals(arrString[0])) {
             rsl = LocalDate.now();
         } else {
-            validation(arrString, 3);
+            validation(arrString, ARRAY_LENGTH_DATE);
             rsl = LocalDate.parse(
                     String.format("%s-%s-%s", arrString[0], MONTHS.get(arrString[1]), arrString[2]),
                     DTF);
