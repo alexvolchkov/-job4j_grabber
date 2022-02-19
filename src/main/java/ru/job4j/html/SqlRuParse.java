@@ -4,8 +4,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.grabber.utils.SqlRuDateTimeParser;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class SqlRuParse {
 
@@ -21,5 +23,19 @@ public class SqlRuParse {
                 System.out.println(td.parent().child(5).text());
             }
         }
+    }
+
+    public static Post parsePage(String url) throws IOException {
+        Document doc = Jsoup.connect(url).get();
+        Element parent = doc.getElementsByClass("msgTable").get(0);
+        String title = parent
+                .getElementsByClass("messageHeader")
+                .get(0)
+                .childNode(1)
+                .toString().trim().split("&nbsp;")[1];
+        String description = parent.getElementsByClass("msgBody").get(1).text();
+        LocalDateTime created = new SqlRuDateTimeParser().parse(
+                parent.getElementsByClass("msgBody").get(1).text());
+        return new Post(title, description, created);
     }
 }
