@@ -45,6 +45,7 @@ public class SqlRuParse implements Parse {
         String description = doc.select(".msgBody").get(1).text();
         String title = doc.select(".messageHeader").get(0).ownText();
         String createdText = doc.select(".msgFooter").get(0).text();
+        createdText = createdText.substring(0, createdText.indexOf("[")).trim();
         LocalDateTime created = dateTimeParser.parse(createdText);
         return new Post(title, link, description, created);
     }
