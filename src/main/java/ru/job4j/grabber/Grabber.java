@@ -40,6 +40,7 @@ public class Grabber implements Grab {
         JobDataMap data = new JobDataMap();
         data.put("store", store);
         data.put("parse", parse);
+        data.put("cfg", cfg);
         JobDetail job = newJob(GrabJob.class)
                 .usingJobData(data)
                 .build();
@@ -81,7 +82,8 @@ public class Grabber implements Grab {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
-            for (Post post : parse.list("https://www.sql.ru/forum/job-offers")) {
+            Properties cfg = (Properties) map.get("cfg");
+            for (Post post : parse.list(cfg.getProperty("grabber.link"))) {
                 store.save(post);
             }
         }
