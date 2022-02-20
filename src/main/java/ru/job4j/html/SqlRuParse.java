@@ -21,9 +21,9 @@ public class SqlRuParse implements Parse {
     }
 
     public static void main(String[] args) throws IOException {
-        String url = "https://www.sql.ru/forum/job-offers/";
+        String url = "https://www.sql.ru/forum/job-offers";
         for (int i = 1; i <= 5; i++) {
-            Document doc = Jsoup.connect(String.format("%s%s", url, i)).get();
+            Document doc = Jsoup.connect(String.format("%s/%s", url, i)).get();
             Elements row = doc.select(".postslisttopic");
             for (Element td : row) {
                 Element href = td.child(0);
@@ -56,14 +56,15 @@ public class SqlRuParse implements Parse {
         Document doc = null;
         for (int i = 1; i <= 5; i++) {
             try {
-                doc = Jsoup.connect(String.format("%s%s", link, i)).get();
+                doc = Jsoup.connect(String.format("%s/%s", link, i)).get();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             Elements row = doc.select(".postslisttopic");
             for (Element element : row) {
                 Post post = detail(element.child(0).attr("href"));
-                if (post.getTitle().toLowerCase().contains("java") && !post.getTitle().toLowerCase().contains("javascript")) {
+                if (post.getTitle().toLowerCase().contains("java")
+                        && !post.getTitle().toLowerCase().contains("javascript")) {
                     rsl.add(post);
                 }
             }
