@@ -106,17 +106,21 @@ public class PsqlStore implements Store, AutoCloseable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        PsqlStore psqlStore = new PsqlStore(cfg);
-        SqlRuParse sqlRuParse = new SqlRuParse(new SqlRuDateTimeParser());
-        for (Post post : sqlRuParse.list("https://www.sql.ru/forum/job-offers/")) {
-            psqlStore.save(post);
+        try (PsqlStore psqlStore = new PsqlStore(cfg)) {
+            SqlRuParse sqlRuParse = new SqlRuParse(new SqlRuDateTimeParser());
+            for (Post post : sqlRuParse.list("https://www.sql.ru/forum/job-offers/")) {
+                psqlStore.save(post);
+            }
+            System.out.println("Вывод всех элементов базы");
+            for (Post post : psqlStore.getAll()) {
+                System.out.println(post);
+            }
+            System.out.println("_____________________________");
+            System.out.println("Поиск по id");
+            System.out.println(psqlStore.findById(2));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        System.out.println("Вывод всех элементов базы");
-        for (Post post : psqlStore.getAll()) {
-            System.out.println(post);
-        }
-        System.out.println("_____________________________");
-        System.out.println("Поиск по id");
-        System.out.println(psqlStore.findById(2));
+
     }
 }
